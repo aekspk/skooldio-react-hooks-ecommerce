@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import Input from './Input';
 
 import { numberWithCommas } from '../utils';
+import { useContext } from 'react';
+import { CartContext } from '../contexts/cart';
 
 const TableRow = styled.tr`
   border-bottom: 1px solid #dcdcdc;
@@ -76,27 +78,42 @@ const TotalPrice = styled.div`
 /**
  * Below is the main CartItem component.
  */
-export const CartItem = ({ data }) => (
-  <TableRow>
-    <TableCell>
-      <div style={{ display: 'flex' }}>
-        <ItemImage src={data.imageUrl} alt={`product ${data.name}`} />
-        <ItemInfo>
-          <Title>{data.name}</Title>
-          <Subtitle>฿{numberWithCommas(data.price)} ต่อชิ้น</Subtitle>
-          <DeleteButton>ลบ</DeleteButton>
-        </ItemInfo>
-      </div>
-    </TableCell>
+export const CartItem = ({ product, quantity }) => {
+  const { removeCartItem, updateQuantity } = useContext(CartContext);
+  return (
+    <TableRow>
+      <TableCell>
+        <div style={{ display: 'flex' }}>
+          <ItemImage src={product.imageUrl} alt={`product ${product.name}`} />
+          <ItemInfo>
+            <Title>{product.name}</Title>
+            <Subtitle>฿{numberWithCommas(product.price)} ต่อชิ้น</Subtitle>
+            <DeleteButton
+              onClick={() => {
+                if (window.confirm('Do you want to delete?')) {
+                  removeCartItem(product.id);
+                }
+              }}
+            >
+              ลบ
+            </DeleteButton>
+          </ItemInfo>
+        </div>
+      </TableCell>
 
-    <TableCell style={{ textAlign: 'right' }}>
-      <Input type={'number'} />
-    </TableCell>
+      <TableCell style={{ textAlign: 'right' }}>
+        <Input
+          value={quantity}
+          onChange={(e) => updateQuantity(product.id, e.target.value)}
+          type={'number'}
+        />
+      </TableCell>
 
-    <TableCell style={{ textAlign: 'right' }}>
-      <TotalPrice>฿{numberWithCommas(data.price)}</TotalPrice>
-    </TableCell>
-  </TableRow>
-);
+      <TableCell style={{ textAlign: 'right' }}>
+        <TotalPrice>฿{numberWithCommas(product.price * quantity)}</TotalPrice>
+      </TableCell>
+    </TableRow>
+  );
+};
 
 export default CartItem;

@@ -1,13 +1,18 @@
 import Hero from '../components/Hero';
 import ProductList from '../components/ProductList';
+import { useEffect, useState } from 'react';
+import useAPI from '../hooks/useAPI';
 
-import { products } from '../data';
+export const Home = () => {
+  const { data, loading } = useAPI('/products');
 
-export const Home = () => (
-  <div>
-    <Hero />
-    <ProductList data={products} />
-  </div>
-);
+  return (
+    <div>
+      <Hero />
+      {loading && <div>Loading...</div>}
+      {!loading && data && <ProductList data={data} />}
+    </div>
+  );
+};
 
 export default Home;

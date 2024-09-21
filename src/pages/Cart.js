@@ -4,7 +4,7 @@ import BaseContainer from '../components/Container';
 import Button from '../components/Button';
 import CartItemList from '../components/CartItemList';
 
-import { products } from '../data';
+import useCart from '../hooks/useCart';
 
 const Container = styled(BaseContainer)`
   display: flex;
@@ -29,12 +29,28 @@ const CheckOutButton = styled(Button)`
 /**
  * Below is the main Cart component.
  */
-export const Cart = () => (
-  <Container>
-    <Title>My Cart</Title>
-    <CartItemList data={products} />
-    <CheckOutButton>Check out</CheckOutButton>
-  </Container>
-);
+export const Cart = () => {
+  const { cartItems, removeCartItem, updateQuantity, checkout, validForCheckout } = useCart();
+  return (
+    <Container>
+      <Title>My Cart</Title>
+      <CartItemList
+        data={cartItems}
+        updateQuantity={updateQuantity}
+        removeCartItem={removeCartItem}
+      />
+      <CheckOutButton
+        disabled={!validForCheckout}
+        onClick={() => {
+          if (window.confirm('Do you want to continue?')) {
+            checkout();
+          }
+        }}
+      >
+        Check out
+      </CheckOutButton>
+    </Container>
+  );
+};
 
 export default Cart;
